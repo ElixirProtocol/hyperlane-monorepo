@@ -83,6 +83,8 @@ contract HypERC20Collateral is TokenRouter {
         uint256 _amount,
         bytes calldata // no metadata
     ) internal virtual override {
+        sdeUSD.cooldownAssets(_amount);
+        sdeUSD.unstake(address(this));
         wrappedToken.safeTransfer(_recipient, _amount);
     }
 }
