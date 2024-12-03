@@ -20,6 +20,7 @@ contract DeployBase is Script {
         address proxyAddress = 0x9AD81058c6C3Bf552C9014CB30E824717A0ee21b;
         address proxyAdminAddress = 0x076761865E04846E76BAA5f37eBa7AfeF0a69d40;
         address deUSDAddress = 0x15700B564Ca08D9439C58cA5053166E8317aa138;
+        address sdeUSDAddress = 0x5C5b196aBE0d54485975D1Ec29617D42D9198326;
         address mailboxAddress = 0xc005dc82818d67AF737725bD4bf75435d065D239;
 
         // Proxies
@@ -44,9 +45,14 @@ contract DeployBase is Script {
         require(upgradedProxy.owner() == deployer);
 
         upgradedProxy.stakeCurrentToken(
-            upgradedProxy.balanceOf(address(upgradedProxy))
+            IERC20(deUSDAddress).balanceOf(address(upgradedProxy))
         );
         require(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)) == 0);
+        require(IERC20(sdeUSDAddress).balanceOf(address(upgradedProxy)) > 0);
+        require(
+            upgradedProxy.balanceOf(address(upgradedProxy)) ==
+                IERC20(sdeUSDAddress).balanceOf(address(upgradedProxy))
+        );
 
         vm.stopBroadcast();
     }

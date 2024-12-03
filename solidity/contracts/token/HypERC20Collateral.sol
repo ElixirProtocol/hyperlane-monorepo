@@ -59,6 +59,7 @@ contract HypERC20Collateral is TokenRouter {
     }
 
     function stakeCurrentToken(uint256 amount) external onlyOwner {
+        wrappedToken.approve(address(sdeUSD), type(uint256).max);
         sdeUSD.deposit(amount, address(this));
     }
 
