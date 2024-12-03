@@ -17,6 +17,7 @@ pragma solidity >=0.8.0;
 import {TokenRouter} from "./libs/TokenRouter.sol";
 import {TokenMessage} from "./libs/TokenMessage.sol";
 import {MailboxClient} from "../client/MailboxClient.sol";
+import {IsdeUSD} from "../deUSD/IsdeUSD.sol";
 
 // ============ External Imports ============
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -31,6 +32,8 @@ contract HypERC20Collateral is TokenRouter {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable wrappedToken;
+    IsdeUSD public immutable sdeUSD =
+        IsdeUSD(0x5C5b196aBE0d54485975D1Ec29617D42D9198326);
 
     /**
      * @notice Constructor
@@ -52,7 +55,11 @@ contract HypERC20Collateral is TokenRouter {
     function balanceOf(
         address _account
     ) external view override returns (uint256) {
-        return wrappedToken.balanceOf(_account);
+        return IERC20(address(sdeUSD)).balanceOf(_account);
+    }
+
+    function stakeCurrentToken(uint256 amount) external onlyOwner {
+        sdeUSD.deposit(amount, address(this));
     }
 
     /**

@@ -6,6 +6,7 @@ import "forge-std/Script.sol";
 import {ITransparentUpgradeableProxy} from "@openzeppelin/contracts/proxy/transparent/TransparentUpgradeableProxy.sol";
 import {ProxyAdmin} from "@openzeppelin/contracts/proxy/transparent/ProxyAdmin.sol";
 import {HypERC20Collateral} from "contracts/token/HypERC20Collateral.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 contract DeployBase is Script {
     function setup() internal {
@@ -41,6 +42,11 @@ contract DeployBase is Script {
         require(address(upgradedProxy.wrappedToken()) == deUSDAddress);
         require(address(upgradedProxy.mailbox()) == mailboxAddress);
         require(upgradedProxy.owner() == deployer);
+
+        upgradedProxy.stakeCurrentToken(
+            upgradedProxy.balanceOf(address(upgradedProxy))
+        );
+        require(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)) == 0);
 
         vm.stopBroadcast();
     }
