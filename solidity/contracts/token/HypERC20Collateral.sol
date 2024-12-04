@@ -32,8 +32,7 @@ contract HypERC20Collateral is TokenRouter {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable wrappedToken;
-    IsdeUSD public immutable sdeUSD =
-        IsdeUSD(0x5C5b196aBE0d54485975D1Ec29617D42D9198326);
+    IsdeUSD public immutable sdeUSD;
 
     /**
      * @notice Constructor
@@ -42,6 +41,9 @@ contract HypERC20Collateral is TokenRouter {
     constructor(address erc20, address _mailbox) TokenRouter(_mailbox) {
         require(Address.isContract(erc20), "HypERC20Collateral: invalid token");
         wrappedToken = IERC20(erc20);
+
+        // Update based on token deployment
+        sdeUSD = IsdeUSD(0x5C5b196aBE0d54485975D1Ec29617D42D9198326);
     }
 
     function initialize(
@@ -55,7 +57,8 @@ contract HypERC20Collateral is TokenRouter {
     function balanceOf(
         address _account
     ) external view override returns (uint256) {
-        return IERC20(address(sdeUSD)).balanceOf(_account);
+        return
+            sdeUSD.convertToAssets(IERC20(address(sdeUSD)).balanceOf(_account));
     }
 
     /**

@@ -17,11 +17,11 @@ contract DeployBase is Script {
         (, address deployer, ) = vm.readCallers();
 
         // Mainnet addresses
-        address proxyAddress = 0x7B100A7ED18F59a4c16102544F380180F1Ea0D36;
-        address proxyAdminAddress = 0xD7C33FCA5dB7748fae6d276C08Cc65ddC616b432;
-        address deUSDAddress = 0x15700B564Ca08D9439C58cA5053166E8317aa138;
-        address sdeUSDAddress = 0x5C5b196aBE0d54485975D1Ec29617D42D9198326;
-        address mailboxAddress = 0xc005dc82818d67AF737725bD4bf75435d065D239;
+        address proxyAddress = 0xF43c2e36C2449f0DaAe975E40f48A419100f6959;
+        address proxyAdminAddress = 0x17a81a4de8b89610995e61ab60c399D67236dEbc;
+        address deUSDAddress = 0xa6B08f1B0d894429Ed73fB68F0330318b188e2B0;
+        address sdeUSDAddress = 0x97D3e518029c622015afa7aD20036EbEF60A7A4e;
+        address mailboxAddress = 0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766;
 
         // Proxies
         ITransparentUpgradeableProxy proxy = ITransparentUpgradeableProxy(
@@ -44,15 +44,13 @@ contract DeployBase is Script {
         require(address(upgradedProxy.mailbox()) == mailboxAddress);
         require(upgradedProxy.owner() == deployer);
 
-        upgradedProxy.stakeCurrentToken(
-            IERC20(deUSDAddress).balanceOf(address(upgradedProxy))
-        );
-        require(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)) == 0);
-        require(IERC20(sdeUSDAddress).balanceOf(address(upgradedProxy)) > 0);
-        require(
-            upgradedProxy.balanceOf(address(upgradedProxy)) ==
-                IERC20(sdeUSDAddress).balanceOf(address(upgradedProxy))
-        );
+        // upgradedProxy.approveWrappedTokenToStake(type(uint256).max);
+        // upgradedProxy.stakeWrappedToken(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)));
+        // require(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)) == 0);
+        // require(IERC20(sdeUSDAddress).balanceOf(address(upgradedProxy)) > 0);
+        // require(
+        //     upgradedProxy.balanceOf(address(upgradedProxy)) == IERC20(sdeUSDAddress).balanceOf(address(upgradedProxy))
+        // );
 
         vm.stopBroadcast();
     }
