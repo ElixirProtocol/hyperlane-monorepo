@@ -58,9 +58,18 @@ contract HypERC20Collateral is TokenRouter {
         return IERC20(address(sdeUSD)).balanceOf(_account);
     }
 
-    function stakeCurrentToken(uint256 amount) external onlyOwner {
-        wrappedToken.approve(address(sdeUSD), type(uint256).max);
+    /**
+     * @dev  Stakes wrappedToken.
+     */
+    function stakeWrappedToken(uint256 amount) external onlyOwner {
         sdeUSD.deposit(amount, address(this));
+    }
+
+    /**
+     * @dev  Approves `amount` of `wrappedToken` to stake on staking contract.
+     */
+    function approveWrappedTokenToStake(uint256 amount) external onlyOwner {
+        wrappedToken.approve(address(sdeUSD), amount);
     }
 
     /**
@@ -85,7 +94,6 @@ contract HypERC20Collateral is TokenRouter {
         bytes calldata // no metadata
     ) internal virtual override {
         sdeUSD.cooldownAssets(_amount);
-        sdeUSD.unstake(address(this));
-        wrappedToken.safeTransfer(_recipient, _amount);
+        sdeUSD.unstake(_recipient);
     }
 }
