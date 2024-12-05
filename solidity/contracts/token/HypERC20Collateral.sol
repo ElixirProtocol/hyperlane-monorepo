@@ -57,8 +57,7 @@ contract HypERC20Collateral is TokenRouter {
     function balanceOf(
         address _account
     ) external view override returns (uint256) {
-        return
-            sdeUSD.convertToAssets(IERC20(address(sdeUSD)).balanceOf(_account));
+        return wrappedToken.balanceOf(_account);
     }
 
     /**
@@ -96,7 +95,8 @@ contract HypERC20Collateral is TokenRouter {
         uint256 _amount,
         bytes calldata // no metadata
     ) internal virtual override {
-        sdeUSD.cooldownAssets(_amount);
+        uint256 sharesToWithdraw = sdeUSD.convertToShares(_amount);
+        sdeUSD.cooldownShares(sharesToWithdraw);
         sdeUSD.unstake(_recipient);
     }
 }

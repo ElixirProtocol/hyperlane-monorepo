@@ -22,6 +22,7 @@ contract DeployBase is Script {
         address deUSDAddress = 0xa6B08f1B0d894429Ed73fB68F0330318b188e2B0;
         address sdeUSDAddress = 0x97D3e518029c622015afa7aD20036EbEF60A7A4e;
         address mailboxAddress = 0xfFAEF09B3cd11D9b20d1a19bECca54EEC2884766;
+        address ogImpl = 0x1e204FDB0F3938a7F3b5Fa5019feE16425311173;
 
         // Proxies
         ITransparentUpgradeableProxy proxy = ITransparentUpgradeableProxy(
@@ -44,7 +45,7 @@ contract DeployBase is Script {
         require(address(upgradedProxy.mailbox()) == mailboxAddress);
         require(upgradedProxy.owner() == deployer);
 
-        // upgradedProxy.approveWrappedTokenToStake(type(uint256).max);
+        upgradedProxy.approveWrappedTokenToStake(type(uint256).max);
         // upgradedProxy.stakeWrappedToken(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)));
         // require(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)) == 0);
         // require(IERC20(sdeUSDAddress).balanceOf(address(upgradedProxy)) > 0);
