@@ -70,8 +70,8 @@ contract HypERC20Collateral is TokenRouter {
     /**
      * @dev  Unstakes wrappedToken.
      */
-    function unstakeWrappedToken(uint256 shares) external onlyOwner {
-        sdeUSD.cooldownShares(shares);
+    function unstakeWrappedToken(uint256 amount) external onlyOwner {
+        sdeUSD.cooldownAssets(amount);
         sdeUSD.unstake(msg.sender);
     }
 
