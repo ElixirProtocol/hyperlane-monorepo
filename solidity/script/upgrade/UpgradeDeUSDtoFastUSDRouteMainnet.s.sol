@@ -44,7 +44,7 @@ contract DeployBase is Script {
         require(address(upgradedProxy.mailbox()) == mailboxAddress);
         require(upgradedProxy.owner() == deployer);
 
-        upgradedProxy.stakeCurrentToken(
+        upgradedProxy.stakeWrappedToken(
             IERC20(deUSDAddress).balanceOf(address(upgradedProxy))
         );
         require(IERC20(deUSDAddress).balanceOf(address(upgradedProxy)) == 0);
