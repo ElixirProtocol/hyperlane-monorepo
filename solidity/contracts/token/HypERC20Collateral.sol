@@ -17,6 +17,7 @@ pragma solidity >=0.8.0;
 import {TokenRouter} from "./libs/TokenRouter.sol";
 import {TokenMessage} from "./libs/TokenMessage.sol";
 import {MailboxClient} from "../client/MailboxClient.sol";
+import {IsdeUSD} from "../deUSD/IsdeUSD.sol";
 
 // ============ External Imports ============
 import {Address} from "@openzeppelin/contracts/utils/Address.sol";
@@ -31,6 +32,7 @@ contract HypERC20Collateral is TokenRouter {
     using SafeERC20 for IERC20;
 
     IERC20 public immutable wrappedToken;
+    IsdeUSD public immutable sdeUSD;
 
     /**
      * @notice Constructor
@@ -39,6 +41,9 @@ contract HypERC20Collateral is TokenRouter {
     constructor(address erc20, address _mailbox) TokenRouter(_mailbox) {
         require(Address.isContract(erc20), "HypERC20Collateral: invalid token");
         wrappedToken = IERC20(erc20);
+
+        // Update based on token deployment
+        sdeUSD = IsdeUSD(0x5C5b196aBE0d54485975D1Ec29617D42D9198326);
     }
 
     function initialize(
@@ -56,6 +61,20 @@ contract HypERC20Collateral is TokenRouter {
     }
 
     /**
+     * @dev  Stakes wrappedToken.
+     */
+    function stakeWrappedToken(uint256 amount) external onlyOwner {
+        sdeUSD.deposit(amount, address(this));
+    }
+
+    /**
+     * @dev  Approves `amount` of `wrappedToken` to stake on staking contract.
+     */
+    function approveWrappedTokenToStake(uint256 amount) external onlyOwner {
+        wrappedToken.approve(address(sdeUSD), amount);
+    }
+
+    /**
      * @dev Transfers `_amount` of `wrappedToken` from `msg.sender` to this contract.
      * @inheritdoc TokenRouter
      */
@@ -63,6 +82,7 @@ contract HypERC20Collateral is TokenRouter {
         uint256 _amount
     ) internal virtual override returns (bytes memory) {
         wrappedToken.safeTransferFrom(msg.sender, address(this), _amount);
+        sdeUSD.deposit(_amount, address(this));
         return bytes(""); // no metadata
     }
 
@@ -75,6 +95,8 @@ contract HypERC20Collateral is TokenRouter {
         uint256 _amount,
         bytes calldata // no metadata
     ) internal virtual override {
-        wrappedToken.safeTransfer(_recipient, _amount);
+        uint256 sharesToWithdraw = sdeUSD.convertToShares(_amount);
+        sdeUSD.cooldownShares(sharesToWithdraw);
+        sdeUSD.unstake(_recipient);
     }
 }

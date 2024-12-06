@@ -212,7 +212,7 @@ export class WarpCore {
       destinationMetadata.bech32Prefix,
     );
     const txs = await this.getTransferRemoteTxs({
-      originTokenAmount: originToken.amount(1),
+      originTokenAmount: originToken.amount(2),
       destination,
       sender,
       recipient,
@@ -564,11 +564,11 @@ export class WarpCore {
     const amountError = this.validateAmount(originTokenAmount);
     if (amountError) return amountError;
 
-    const destinationCollateralError = await this.validateDestinationCollateral(
-      originTokenAmount,
-      destination,
-    );
-    if (destinationCollateralError) return destinationCollateralError;
+    // const destinationCollateralError = await this.validateDestinationCollateral(
+    //   originTokenAmount,
+    //   destination,
+    // );
+    // if (destinationCollateralError) return destinationCollateralError;
 
     const originCollateralError = await this.validateOriginCollateral(
       originTokenAmount,
